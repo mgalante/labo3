@@ -1,0 +1,105 @@
+//gcc -o server Server.c -ggdb -Wall
+
+
+unlike 
+create
+read
+close
+write
+stat
+lseek
+
+unlink(char * pathfile);
+
+el path puede ser absoluto o relativo (a donde ejecute el programa)
+
+
+
+
+int stat(char * pathfile, struct stat *info )
+el path debe ser absoluto porque con recursividad se rompe.
+
+Stat me da info de cualquier elemento del filesystem.
+
+main(){	
+	struct stat info; //Aca se alocatea la memoria cuando empiza el programa y se libera cuando termina.
+	int res = stat("/tmp", &info);	
+}
+
+
+main(){	
+	struct stat *info;
+	inf = (struct info*) malloc(sizeod(struct stat));
+	int res = stat("/tmp", info);	
+	free(info);
+}
+
+
+
+creat(pathfile, permisos)
+
+open(pathfile, flags)
+open(pathfile,flags,permisos)   => creat+abrir
+flags: O_TRUNC elimina lo que existia
+flags: O_APPEND agregar a continuación
+O_RDONLY|O_WRONLY|O_RDWR
+
+
+int write 
+	-file descriptor
+	-el texto o cadena de bytes
+	-cant de bytes o carecteres a escribir
+
+return cantidad de bytes
+
+	strlen => cant bytes de caracteres
+	sizeof => tamano en bytes del tipo de datos.
+
+
+int read(rd, buffer2, 1024)
+
+lseek(fd, cuanto, con respecto a que)
+
+valores + es adelante, valores - es atras
+SEEK_END le voy a pasar valores negativos
+SEEK_CUR 
+SEEK_SET 
+
+
+
+
+Ejercicios adicionales de archivos y directorios
+1) Listar todos los archivos y directorios de un directorio pasado por parámetro.
+2) Listar todos los archivos pasados de un directorio pasado por parámetro y escribir por
+pantalla la cantidad de bytes que ocupan en total.
+3) Crear un programa que cree un archivo pasado por parámetro y le colque como contenido el
+segundo parámetro. Ejemplo, si se ejecuta a.out hola.txt “este es el contenido” deberá crear un
+archivo hola.txt con el contenido “este es el contenido”.
+4) Listar todos los archivos de un directorio y listar recursivamente todos los archivos y
+directorios interiores junto con el tamaño de cada uno.
+5) Apendear a un archivo pasado por parámetro lo que se pasa por segundo parámetro.
+Ejemplo si se ejecuta a.out hola.txt “este es el contenido” deberá apendear al archivo hola.txt el
+contenido “este es el contenido”.
+6) Crear un programa que copie un archivo. Ejemplo ./a.out archivo1 archivo2 copita todo el
+contenido de archivo1 al archivo2.
+7) Mostrar por pantalla el tamaño de un archivo pasado por parámetro utilizando la función
+lseek.
+
+
+
+t_pid getpid()
+
+t_pid getppid()
+
+pid_t fork(); divide el proceso en 2 procesos y retorna el pid del nuevo. Copia el stack y el heap del proceso original.
+ devuelve -1 si hay error, 0 para el hijo y el pid del hijo al padre.
+ /proc/sys/kernel/pid_max es el numero maximo de pid. cuando se pasa vuelve a arrancar.
+
+
+Esperar finalizacion de un proceso hijo;
+int pid = waitpid(pid, NULL, 0);
+int pid = waitpid(pid, NULL, WNOHANG); ret -1 si no finalizo nada
+ 
+ wait
+
+
