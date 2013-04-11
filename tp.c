@@ -8,19 +8,60 @@
 #include <fcntl.h>
 
 int getFileList(int fd, const char* directory);
+int sendFile(int fd, const char* directory, const char* filename);
 int main()
 {
     printf("Hello world!\n");
     
     creat("test_tp.txt", 0777);
 	//fd file descriptor. -1 error.
-	int fd = open("test_tp.txt", O_RDWR | O_TRUNC);
-    
+	int fd = open("test_tp.txt", O_RDWR | O_TRUNC);    
     getFileList(fd,"./");
-    return 0;
+
+    sendFile(fd,"./","salida.txt");
+    close(fd);
+
+    return EXIT_SUCCESS;
 
 }
 
+
+int sendFile(int fd, const char* directory, const char* filename)
+{
+	char fullpath[1024];
+	unsigned char buffer[1024];
+	int read_size = 0;
+	int write_size = 0;
+
+	strcpy(fullpath,directory);
+	strcat(fullpath, filename);
+
+	int readfd = open(fullpath, O_RDONLY);
+	if(readfd == 0){
+		perror("Al leer archivo (104)");
+		return 0;
+	}
+
+	lseek(readfd, 0, SEEK_SET);
+		
+	while((read_size = read(readfd, buffer, 1024)) > 0)
+	{
+		write_size = write(fd, buffer, read_size);
+		if(write_size == -1)
+		{
+			perror("Al escribir en fd (105)");
+			break;
+		}
+	}
+
+	if(read_size < 0)
+	{
+		perror("Al leer archivo (106)");		
+	}
+	
+	close(readfd);
+	return 1;
+}
 
 int getFileList(int fd, const char* directory)
 {
@@ -71,7 +112,4 @@ int getFileList(int fd, const char* directory)
 	closedir(dir);
 //	free(statinfo);
 	return 1;	
-
 }
-
-
