@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	DIR* dir = opendir(argv[1]); //TODO recibirlo por argumento.
+	DIR* dir = opendir(argv[1]); 
 
 	if(dir == NULL)
 	{

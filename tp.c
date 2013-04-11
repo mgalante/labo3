@@ -5,20 +5,28 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <fcntl.h>
 
-
+int getFileList(int fd, const char* directory);
 int main()
 {
     printf("Hello world!\n");
+    
+    creat("test_tp.txt", 0777);
+	//fd file descriptor. -1 error.
+	int fd = open("test_tp.txt", O_RDWR | O_TRUNC);
+    
+    getFileList(fd,"./");
     return 0;
+
 }
 
 
-int getFileList(int fd, char[] directory)
+int getFileList(int fd, const char* directory)
 {
 
-	struct dirent* info;
-	struct stat* statinfo;	    
+	struct dirent* direntry;
+	struct stat statinfo;	    
  	DIR* dir;
 
  	dir = opendir(directory); //TODO recibirlo por argumento.
@@ -28,42 +36,42 @@ int getFileList(int fd, char[] directory)
  		return 0;
  	}
 
- 	info = readdir(dir);
-	if(info == NULL){
+ 	direntry = readdir(dir);
+	if(direntry == NULL){
 		perror("Al leer directorio (101)");
 		closedir(dir);
 		return 0;
 	}
 
-	statinfo = (struct stat*) malloc(sizeof(struct stat));
+//statinfo = (struct stat*) malloc(sizeof(struct stat));
 	char fullpath[1024];
-	strcpy(fullpath,directory);
-	strcat(fullpath, info->d_name);
+	char buffer[1024];
 
 
+	while(direntry != NULL){		
+		if(strcmp(direntry->d_name, ".") != 0 &&  strcmp(direntry->d_name, "..") != 0)
+		{
+			strcpy(fullpath,directory);
+			strcat(fullpath, direntry->d_name);
+
+			if(stat(fullpath, &statinfo) == -1){
+				perror("Al obtener informacion(103)");	
+			}else{
+				sprintf(buffer,"%s\t%lld\n\0" ,direntry->d_name,(long long) statinfo.st_size);
+				write(fd, buffer, strlen(buffer));
+			} 	
+		}
+
+		direntry = readdir(dir);			
+	}
+	
+	sprintf(buffer, "\n\0");
+	write(fd, buffer, strlen(buffer));
+
+	closedir(dir);
+//	free(statinfo);
 	return 1;	
 
 }
 
 
-void getFullPath(){
-
-	while(info != NULL){		
-
-
-		if(stat(fullpath, statinfo) == -1)
-			perror(" al obtener informacion");	
-		else{
-
-			printf("%lo \t %lld \t", (unsigned long) statinfo->st_mode, (long long) statinfo->st_size);
-		} 	
-		
-		printf("%s \n", info->d_name);
-
-
-		info = readdir(dir);			
-	}
-
-
-
-}

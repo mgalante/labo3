@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
 	
 	info = readdir(dir);
 
+
 	statinfo = (struct stat*) malloc(sizeof(struct stat));
 
 	//nombre, inodo, tipo de archivo (no sirve en tdas las distro), 
