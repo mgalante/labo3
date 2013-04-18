@@ -172,11 +172,14 @@ void read_udp_message(){
   // recvfrom(s, buf, BUFLEN, 0, &si_other, &slen)
 }
 
-void read_message(){
+void read_message(int j){
+  char buffer[1024];
+  int result;
   logger("New message");
-  // do {
-  //    result = recv(j, buffer, MAX_BUFFER_SIZE, 0);
-  // } while (result == -1 && errno == EINTR);  
+  printf("%d\n",j);
+  do {
+      result = recv(j, &buffer, 1024, 0);
+  } while (result == -1 && errno == EINTR);  
 }
 
 void listen_and_accept_new_clients(){
@@ -213,7 +216,7 @@ void listen_and_accept_new_clients(){
 
         for (j=0; j<maxfd+1; j++) {
           if (FD_ISSET(j, &tempset)) {
-            read_message();
+            read_message(j);
             FD_CLR(j, &tempset);
           }      // end if (FD_ISSET(j, &tempset))
         }      // end for (j=0;...)

@@ -7,11 +7,19 @@
 #include <string.h>
 #include <fcntl.h>
 
+//#include <sys/socket.h>
+//#include <netinet/in.h>
+#include <netdb.h> 
+
 int getFileList(int fd, const char* directory);
 int sendFile(int fd, const char* directory, const char* filename);
+void logger(const char *text);
+int startClient();
+
 int main()
 {
-    printf("Hello world!\n");
+	startClient();
+/*    printf("Hello world!\n");
     
     creat("test_tp.txt", 0777);
 	//fd file descriptor. -1 error.
@@ -20,9 +28,69 @@ int main()
 
     sendFile(fd,"./","salida.txt");
     close(fd);
-
+*/
     return EXIT_SUCCESS;
+}
 
+void logger(const char *text) {
+  printf("%s\n", text);
+}
+
+int startClient(){
+	int sockfd, portno, n;
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
+    char buffer[256];
+
+
+    portno = 3456;
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0){    	    	
+        logger("Al abrir socket(106)");
+        return 0;
+    }
+
+    server = gethostbyname("localhost");
+    if (server == NULL) {
+        //fprintf(stderr,"ERROR, no such host\n");
+        logger("No se encontro el host (107)");
+        close(sockfd); // creoq ue no va;
+        return 0;
+    }
+
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+    
+    serv_addr.sin_family = AF_INET;
+    
+    bcopy((char *)server->h_addr, 
+         (char *)&serv_addr.sin_addr.s_addr,
+         server->h_length);
+    serv_addr.sin_port = htons(portno);
+
+    if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
+    {
+        logger("ERROR connecting");
+        close(sockfd);
+        return 0;
+
+	}    
+    logger("ACA YA ESTOY CONECTADO!\n");
+
+/*
+    printf("Please enter the message: ");
+    bzero(buffer,256);
+    fgets(buffer,255,stdin);
+    n = write(sockfd,buffer,strlen(buffer));
+    if (n < 0) 
+         error("ERROR writing to socket");
+    bzero(buffer,256);
+    n = read(sockfd,buffer,255);
+    if (n < 0) 
+         error("ERROR reading from socket");
+    printf("%s\n",buffer);
+    */
+    close(sockfd);
+    return 1;
 }
 
 

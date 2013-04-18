@@ -103,3 +103,4 @@ int pid = waitpid(pid, NULL, WNOHANG); ret -1 si no finalizo nada
  wait
 
 
+Threads

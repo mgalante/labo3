@@ -1,0 +1,28 @@
+Threads
+TCB Donde se guardan lo datos de los threads. (como la pcb de los procesos)
+
+para poder usar theads hay que agregar en el gcc el paramtero -l pthread
+
+cuando un proceso finaliza, mueren todos los threads.
+Un proceso puede finalizar si cualquier thread llama a exit o si finaliza el main.
+
+un thread finaliza si retorna su funcion y si se llama al ptrhead_exit();
+
+pthread_create() crea un trhead
+pthread_join() Esta funcion libera un trhead. Bloquea al trhead que la llama hasta que termine el trhead que intenta liberar. Va a recibir el valor de retorno del thread.
+
+Las señales no se pueden usar entre threads. Si recibo una senal de otro proceso se frena el trhead principal, pero elresto no (a menos que sea una señal de finalizar proceso y finaliza todo).
+
+Estamos usando threads del tipo "joinable", se crean por default. Indica que cada trhead debe ser liberado por cualquier otro thread.
+
+
+existe un tipo llamado thread detached, en el cual el trhead es el que libera la memoria y no puedo dar valor de retorno.
+
+pthread_attr_t attr; defino una variable para guardar los attributos de configuracion
+pthread_attr_init(&attr); //inicializo la estructura con los valores default
+pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED); //le digo que es detached
+//Estas configuraciones estan en el man pthread_attr_init al fondo.
+//Lanza un trhead
+pthread_create(&thid, &attr, mi_funcion, NULL);
+
+en thid voy a recibir el thread id. El ultimo null corresponde al puntero de los argumentos que va a trhead.
