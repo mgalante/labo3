@@ -20,6 +20,7 @@
 
 #define PORT 3456
 #define UNIX_SOCK_PATH "/tmp/lab3.sock"
+#define MAX_BUFFER_SIZE 1024
 
 int tcp_socket_server, udp_socket_server, unix_socket_server, maxfd;
 fd_set readset, tempset;
@@ -172,14 +173,16 @@ void read_udp_message(){
   // recvfrom(s, buf, BUFLEN, 0, &si_other, &slen)
 }
 
-void read_message(int j){
+int read_message(int j){
   char buffer[1024];
   int result;
   logger("New message");
-  printf("%d\n",j);
+  printf("Origen: %d\n",j);
   do {
-      result = recv(j, &buffer, 1024, 0);
-  } while (result == -1 && errno == EINTR);  
+      result = recv(j, &buffer, MAX_BUFFER_SIZE, 0);
+
+  } while (result == -1 && errno == EINTR); 
+  return result;
 }
 
 void listen_and_accept_new_clients(){
@@ -216,7 +219,9 @@ void listen_and_accept_new_clients(){
 
         for (j=0; j<maxfd+1; j++) {
           if (FD_ISSET(j, &tempset)) {
-            read_message(j);
+            if(read_message(j) == 0){
+              FD_CLR(j, &readset);
+            }
             FD_CLR(j, &tempset);
           }      // end if (FD_ISSET(j, &tempset))
         }      // end for (j=0;...)

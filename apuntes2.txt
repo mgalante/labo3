@@ -26,3 +26,29 @@ pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED); //le digo que es de
 pthread_create(&thid, &attr, mi_funcion, NULL);
 
 en thid voy a recibir el thread id. El ultimo null corresponde al puntero de los argumentos que va a trhead.
+
+
+AGenda
+25/4 semaforos (hoy)
+2/5 revision tp /memoria compartida
+16/5 examen
+23/5 finales
+30/5 cola de mensajes
+6/6 entrega de tp
+
+
+
+
+Semaforos
+1) 1 proceso accede a cierto recurso (Binario)
+	x procesos acceden a cierto recurso (contadores)
+2) wait (decrece el semaforo)/ signal (incrementa el semaforo)
+3) Binarios 0 -1 / Contadores  0..x 
+
+Para que los usamos:
+Marcar el orden de ejecucion de procesos
+
+prefijos de funciones
+sem -> semaforos
+shm -> memoria compartida
+msg -> cola de mensajes
