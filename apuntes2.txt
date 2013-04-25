@@ -52,3 +52,104 @@ prefijos de funciones
 sem -> semaforos
 shm -> memoria compartida
 msg -> cola de mensajes
+
+sufijos
+get -> crear u obtiene un recurso
+ctl -> control o lectura de mas informacion
+
+
+int semget(key_t key /*identificacion*/, int nsems /*cantidad*/, int semflg )
+flags:
+IPC_CREAT
+se usa pra crear y/o abrir un conjunto de semaforos.
+devuelve el identificador de acceso a los semaforos.
+
+semctl;
+par obtener un key_t puedo usar 
+
+1)-hardcoding
+2)-ftok(char* path, int p)
+es como un md5 pero devuelve un entero.
+el path debe ser a un archivo que tiene que existir
+
+3)-IPC_PRIVATE. Me lo da al azar el operativo.
+
+/*NOTA AL LADO
+*NO SE COPIA A LOS HIJOS SENALES U A LAS ALARMAS CON FORK.
+USA CLONE y se puedo pdecir que queremos que el proceso hijo o thread reciba.
+Podria forkear con clone y tener otro compartamiento.
+*/
+
+
+
+semget(1542,5,IPC_CREAT | 0777) Crea si no existe el conjunto de semaforos 1542 con 5 semaforos.
+Si ya existe y le pido que lo cree no va a hacer nada (no lo va a pisar).
+Si le exisita con distinta cantidad de semaforos es success.
+Si existe y tengo restringido los permisos, me va a dar error.
+
+Si quiero solamente abrirlo (y no crearlo)
+semget(1542,0,0)
+Solo da ok si existe y tengo permisos.
+
+Luego de crear el conjunto de semaforos debo setearle un valor inicial. 
+Para eso uso semctl.
+
+int semctl(int semid, int semnum, int cmd, ...);  //los ... se manejan con varhglist y un conjunto de funciones relacionadas.
+
+cmd posibles que vamos a usar
+IPC_RMID); /*eliminar conjunto de semaforos*/ Es importante porque el semaforo persiste al finalizar el programa.
+SET_VAL,1); /*inicializar con valor*/
+/*Hay un monton de opciones para obtener informacion */
+
+
+semnum es el numero de semaforo que quiero acceder
+No puedo crear semaforos binarios que esten limitados, es binario por el uso que le de.
+
+
+Ojo que puedo creer que estoy creando un semaforo, y en realidad ya existe. Paso seguido voy a inicializar el semaforo y voy a estar cambiando el valor y rompiendo tood.
+
+int semop(int semid, struct sembuf *sops, unsigned nsops);
+
+void cwait(int semid, int sennum ){	
+	struct sembuf op;
+	op.sem_op = -1;
+	op.sem_num = sennum;
+	op.sem_flg = 0;
+	semop(semid,&op,1);
+
+}
+
+
+semop -> si el sem=0 se bloqvoid cwait(int semid, int sennum ){	
+	struct sembuf op;
+	op.sem_op = -1;
+	op.sem_num = sennum;
+	op.sem_flg = 0;
+	semop(semid,&op,1);
+
+}
+uea, y decrementa si es > 0;
+retorna >0 si ok.
+retorna -1 si no existe el conjunto de semaforo o el numero de semaforo
+
+
+
+           unsigned short sem_num;  /* semaphore number */
+           short          sem_op;   /* semaphore operation */
+           short          sem_flg;  /* operation flags */
+
+
+
+void csignal(int semid, int sennum ){	
+	struct sembug op;
+	op.sem_op = 1;
+	op.sem_num = sennum;
+	op.sem_flg = 0;
+	semop(semid,&op,1);
+
+}
+
+para bloquear threads necesitamos usar mutex en lugar de semaforos para no bloquear toodo el proceso entero.
+mutex es binario.
+
+
