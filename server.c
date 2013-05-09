@@ -22,6 +22,14 @@
 #define UNIX_SOCK_PATH "/tmp/lab3.sock"
 #define MAX_BUFFER_SIZE 1024
 
+
+struct client_status {
+  int client_id;
+ // int 
+
+};
+
+
 int tcp_socket_server, udp_socket_server, unix_socket_server, maxfd;
 fd_set readset, tempset;
 
@@ -234,6 +242,7 @@ void listen_and_accept_new_clients(){
 void stop_main(){
   stop_tcp_server();
   stop_udp_server();
+  listen_and_accept_new_clients();
   stop_unix_socket_server();  
 }
 

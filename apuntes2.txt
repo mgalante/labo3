@@ -63,6 +63,7 @@ flags:
 IPC_CREAT
 se usa pra crear y/o abrir un conjunto de semaforos.
 devuelve el identificador de acceso a los semaforos.
+se usa para crear antes del fork por ejemplo y que lo hereden los hijos.
 
 semctl;
 par obtener un key_t puedo usar 
@@ -152,4 +153,50 @@ void csignal(int semid, int sennum ){
 para bloquear threads necesitamos usar mutex en lugar de semaforos para no bloquear toodo el proceso entero.
 mutex es binario.
 
+
+
+
+
+!Memoria compartida
+
+//crear SHM
+shmget(key_t key, inmt length, 	int flags)
+
+
+shmget(
+	key_t key, //lo puedo crear con ftok, hardcoded o ipc_create
+	int length,  //cant de bytes sizeof(int) o sizeof(struct x) o 512 o asi.
+	int flags // IPC_CREAT | 0777
+	)
+
+Attachar memoria.
+Agrego al Stack y Heap el acceso al SHM y que el SO me deje.
+
+Si tengo 2 procesos
+
+A:
+int shmid = shmget(XXX, sizeof(int), IPC_CREAT|0777);
+int* var = (int*)shmat(shmid,null,0); 
+cwait(s0);
+(*var)=5;
+csignal(s0);
+shmdt(var);
+shmctl(shmid, IPC_RMID,0); //ELIMINATE CUANDO TODOS HAYAN DesATACHADO
+
+B:
+shmget(XXX, 0, 0)
+int* var = (int*)shmat(shmid,null,0);
+shmdt(var);
+
+
+Para podes usar la variable debe ser protegida por semaforos
+cwait(s0);
+(*var)=5;
+csignal(s0);
+
+Ojo con los deadlock si usas multiples semaforos. SE puede usar mas de 1 semaforo para 1 memoria compartida (si es una estructura por ejemplo)
+
+
+shmdt(var);
+shmctl(shmid, IPC_RMID,0); //ELIMINATE CUANDO TODOS HAYAN DesATACHADO
 
